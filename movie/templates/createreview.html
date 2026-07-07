@@ -1,30 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card mb-3">
-    <div class="row g-0">
-        <div>
-            <div class="card-body">
-                <h5 class="card-title">Add Review for {{movie.title }}</h5>
-                {% if error %}
-                <div class="alert alert-danger mt-3" role="alert">
-                    {{ error }}
-                </div>
-                {% endif %}
-                <p class="card-text">
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="form-control">
-                        <textarea name="myreview" rows='4' cols="50">
-                        </textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        Add Review
-                    </button>
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="glass-card p-4 shadow">
+            <h3 class="fw-bold text-glow mb-2"><i class="bi bi-chat-square-heart text-primary me-2"></i>Add Review</h3>
+            <p class="text-muted mb-4">Share your thoughts on <strong>{{ movie.title }}</strong></p>
 
-                </form>
-                </p>
+            {% if error %}
+            <div class="alert alert-danger border-danger bg-dark text-danger py-2 mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
             </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Rating Widget -->
+                <div class="mb-4">
+                    <label class="form-label text-glow fw-semibold d-block mb-1">Your Rating</label>
+                    <div class="rating-widget">
+                        <input type="radio" id="star5" name="rating" value="5" checked /><label for="star5"
+                            title="Excellent"><i class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Good"><i
+                                class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Average"><i
+                                class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Poor"><i
+                                class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Very Poor"><i
+                                class="bi bi-star-fill"></i></label>
+                    </div>
+                </div>
+
+                <!-- Review Content -->
+                <div class="mb-4">
+                    <label class="form-label text-glow fw-semibold" for="reviewTextArea">Your Review</label>
+                    <textarea name="myreview" id="reviewTextArea" class="form-control form-input-dark" rows="5"
+                        placeholder="Write your honest review here..." required></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-premium flex-grow-1"><i
+                            class="bi bi-check-circle me-1"></i>Submit Review</button>
+                    <a href="{% url 'detail' movie.id %}" class="btn btn-premium-outline">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

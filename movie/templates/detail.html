@@ -1,50 +1,136 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card mb-3">
-    <div class="row g-0">
-        <div class="col-md-4">
-            <img src="{{ movie.image.url }}" class="img-fluid rounded-start" alt="">
-        </div>
-        <div class="col-md-8">
-            <div class="card-body">
-                <h5 class="card-title">{{ movie.title }}</h5>
-                <p class="card-text">{{ movie.description }}</p>
-                <p class="card-text">
-                    {% if movie.url %}
-                    <a href="{{ movie.url }}" class="btn btn-primary">
-                        Movie Link
-                    </a>
-                    {% endif %}
-
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'createreview' movie.id %}" class="btn btn-primary">
-                        Add Review
-                    </a>
-                    {% endif %}
-
-                    <hr/>
-                <h3>Reviews</h3>
-                    <ul class="list-group">
-                    {% for review in reviews %}
-                        <li class="list-group-item pb-3 pt-3">
-                            <h5 class="card-title">
-                                Review by {{ review.user.username }}
-                            </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                {{ review.date }}
-                            </h6>
-                            <p class="card-text">{{ review.text }}</p>
-                            {% if user.is_authenticated and user == review.user %}
-                            <a href="{% url 'updatereview' review.id %}" class="btn btn-primary me-2">Update</a>
-                            <a href="{% url 'deletereview' review.id %}" class="btn btn-danger">Delete</a>
-                            {% endif %}      
-                        </li>
-                    {% endfor %}
-                    </ul>
-                </p>
+<div class="row g-4 movie-detail-section mb-5">
+    <!-- Movie Poster Container Column -->
+    <div class="col-md-5 col-lg-4">
+        <div class="poster-container glass-card">
+            {% if movie.image %}
+            <img src="{{ movie.image.url }}" class="poster-img img-fluid w-100" alt="{{ movie.title }}">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-secondary" style="min-height: 450px;">
+                <i class="bi bi-camera-reels text-muted" style="font-size: 5rem;"></i>
             </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Detail and Reviews Information Column -->
+    <div class="col-md-7 col-lg-8">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+            <h1 class="fw-extrabold text-glow m-0">{{ movie.title }}</h1>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Watchlist Toggle Action Button -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'toggle_watchlist' movie.id %}"
+                    class="btn-watchlist-toggle {% if in_watchlist %}active{% endif %}"
+                    title="{% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}">
+                    {% if in_watchlist %}
+                    <i class="bi bi-bookmark-heart-fill" style="font-size: 1.4rem;"></i>
+                    {% else %}
+                    <i class="bi bi-bookmark-heart" style="font-size: 1.4rem;"></i>
+                    {% endif %}
+                </a>
+                {% endif %}
+
+                {% if movie.url %}
+                <a href="{{ movie.url }}" class="btn btn-premium d-inline-flex align-items-center" target="_blank">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>Official Site
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Rating overview -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+            {% if avg_rating %}
+            <div class="average-stars-large text-glow">
+                <i class="bi bi-star-fill text-warning"></i> {{ avg_rating }} <span
+                    class="text-muted fs-6 font-normal">/ 5.0</span>
+            </div>
+            <span class="text-muted">|</span>
+            <span class="text-muted"><i class="bi bi-chat-text me-1"></i>{{ reviews.count }} review{{
+                reviews.count|pluralize }}</span>
+            {% else %}
+            <span class="text-muted"><i class="bi bi-star me-1"></i>No reviews yet. Be the first to add!</span>
+            {% endif %}
+        </div>
+
+        <h5 class="fw-semibold text-glow mb-2">Synopsis</h5>
+        <p class="text-muted fs-5 mb-5 lh-base">
+            {{ movie.description }}
+        </p>
+
+        <!-- Reviews Header section -->
+        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
+            <h3 class="fw-bold text-glow m-0">Viewer Reviews</h3>
+            {% if user.is_authenticated %}
+            <a href="{% url 'createreview' movie.id %}" class="btn btn-premium btn-sm">
+                <i class="bi bi-plus-circle me-1"></i>Add Review
+            </a>
+            {% else %}
+            <a href="{% url 'loginaccount' %}?next={{ request.path }}" class="btn btn-premium-outline btn-sm">
+                <i class="bi bi-lock me-1"></i>Login to Review
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Reviews list -->
+        <div class="reviews-wrapper">
+            {% for review in reviews %}
+            <div class="review-item">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="fw-bold text-glow m-0"><i class="bi bi-person-circle text-primary me-2"></i>{{
+                            review.user.username }}</h6>
+                        <small class="text-muted">{{ review.date|date:"F d, Y - P" }}</small>
+                    </div>
+                    <!-- Stars Display -->
+                    <span class="average-stars" title="Rating: {{ review.rating }}/5">
+                        {% if review.rating == 1 %}
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+                            class="bi bi-star"></i>
+                        {% elif review.rating == 2 %}
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                        {% elif review.rating == 3 %}
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star"></i><i class="bi bi-star"></i>
+                        {% elif review.rating == 4 %}
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i>
+                        <i class="bi bi-star"></i>
+                        {% elif review.rating == 5 %}
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <p class="review-content text-muted mt-3 mb-0 fs-6 whitespace-pre-line">
+                    {{ review.text }}
+                </p>
+
+                {% if user.is_authenticated and user == review.user %}
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <a href="{% url 'updatereview' review.id %}" class="btn btn-sm btn-premium-outline py-1 px-3">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                    </a>
+                    <a href="{% url 'deletereview' review.id %}" class="btn btn-sm btn-premium-danger py-1 px-3">
+                        <i class="bi bi-trash me-1"></i>Delete
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="bi bi-chat-right-quote text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">No one has reviewed this movie yet.</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
-{% endblock content %}
+{% endblock %}

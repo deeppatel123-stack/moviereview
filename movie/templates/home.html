@@ -1,74 +1,191 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<form action="">
-    <div class="mb-3">
-        <label class="form-label">Search for Movie:</label>
-        <input type="text" class="form-control" name="searchMovie" placeholder="Enter movie name" value="{{ searchTerm }}">
+<div class="row align-items-center mb-4">
+    <div class="col-md-6">
+        <h1 class="fw-extrabold text-glow mb-1">Explore Movies</h1>
+        <p class="text-muted">Explore popular releases and read authentic reviews.</p>
     </div>
-
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-<p>Searching for : {{ searchTerm }}</p>
-
-<div class="row row-cols-1 row-cols-md-3 g-4">
-
-    {% for movie in movies %}
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-
-            <img
-                src="{{ movie.image.url }}"
-                class="card-img-top"
-                alt="{{ movie.title }}"
-                style="
-                    height: 400px;
-                    width: 100%;
-                    object-fit: contain;
-                    background-color: #f8f9fa;
-                    padding: 10px;
-                "
-            >
-
-            <div class="card-body d-flex flex-column">
-
-                <a href="{% url 'detail' movie.id %}" class="text-decoration-none text-dark">
-                    <h5 class="card-title fw-bold">
-                        {{ movie.title }}
-                    </h5>
-                </a>
-
-                <p class="card-text">
-                    {{ movie.description }}
-                </p>
-
-                {% if movie.url %}
-                <a href="{{ movie.url }}" class="btn btn-primary mt-auto" target="_blank">
-                    Movie Link
-                </a>
-                {% endif %}
-
-            </div>
-
-        </div>
+    <!-- Sorting Widget -->
+    <div class="col-md-6 d-flex justify-content-md-end align-items-center gap-2 mt-3 mt-md-0">
+        <span class="text-muted text-nowrap"><i class="bi bi-funnel me-1"></i>Sort by:</span>
+        <form method="GET" action="{% url 'home' %}" id="sortForm" class="d-inline-block">
+            {% if searchTerm %}
+            <input type="hidden" name="searchMovie" value="{{ searchTerm }}">
+            {% endif %}
+            <select name="sort_by" class="form-select sort-select"
+                onchange="document.getElementById('sortForm').submit()">
+                <option value="title_asc" {% if sort_by == "title_asc" %}selected{% endif %}>Title (A - Z)</option>
+                <option value="title_desc" {% if sort_by == "title_desc" %}selected{% endif %}>Title (Z - A)</option>
+                <option value="rating_desc" {% if sort_by == "rating_desc" %}selected{% endif %}>Highest Rated</option>
+            </select>
+        </form>
     </div>
-    {% endfor %}
-
 </div>
 
-<br>
+<!-- Search Section -->
+<div class="search-container mb-5">
+    <form action="" method="GET" class="row g-2 align-items-center" id="searchSubmitForm">
+        {% if sort_by %}
+        <input type="hidden" name="sort_by" value="{{ sort_by }}">
+        {% endif %}
+        <div class="col-sm-9 col-md-10">
+            <div class="input-group">
+                <span class="input-group-text bg-black border-secondary text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control form-input-dark" id="searchInputField" name="searchMovie"
+                    placeholder="Search for movies..." value="{{ searchTerm|default:'' }}">
+            </div>
+        </div>
+        <div class="col-sm-3 col-md-2 d-grid">
+            <button type="submit" class="btn btn-premium"><i class="bi bi-search me-1"></i>Search</button>
+        </div>
+    </form>
+    <!-- Auto-complete Suggestions (DOM-based) -->
+    <div class="suggestions-box" id="suggestionsContainer"></div>
+</div>
 
-<h2>Join our mailing list</h2>
+{% if searchTerm %}
+<div
+    class="alert alert-info border-secondary bg-dark text-glow py-2 mb-4 d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-info-circle-fill text-primary me-2"></i>Showing search results for: <strong>"{{ searchTerm
+            }}"</strong></span>
+    <a href="{% url 'home' %}" class="btn btn-sm btn-premium-outline py-0 px-2 text-decoration-none">Clear</a>
+</div>
+{% endif %}
 
-<form action="{% url 'signup' %}">
-    <div class="mb-3">
-        <label class="form-label">Enter your email:</label>
-        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+<!-- Movies Grid -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="moviesCatalogGrid">
+    {% for movie in movies %}
+    <div class="col movie-card-wrapper" data-title="{{ movie.title|lower }}">
+        <div class="card h-100 glass-card">
+            <div class="movie-img-container">
+                {% if movie.image %}
+                <img src="{{ movie.image.url }}" class="movie-img" alt="{{ movie.title }}">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center h-100 bg-secondary text-muted">
+                    <i class="bi bi-camera-reels" style="font-size: 3rem;"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <a href="{% url 'detail' movie.id %}" class="movie-title-link">
+                        <h5 class="card-title fw-bold m-0">{{ movie.title }}</h5>
+                    </a>
+                </div>
+
+                <!-- Ratings Summary -->
+                <div class="mb-3">
+                    {% if movie.average_rating %}
+                    <span class="average-stars" title="Average Rating">
+                        <i class="bi bi-star-fill"></i> {{ movie.average_rating|floatformat:1 }} / 5.0
+                    </span>
+                    {% else %}
+                    <span class="text-muted small"><i class="bi bi-chat-left-dots me-1"></i>No reviews yet</span>
+                    {% endif %}
+                </div>
+
+                <p class="card-text text-muted small mb-3 flex-grow-1">
+                    {{ movie.description|truncatechars:110 }}
+                </p>
+
+                <div class="d-flex gap-2">
+                    <a href="{% url 'detail' movie.id %}" class="btn btn-premium-outline flex-grow-1 text-center py-2">
+                        <i class="bi bi-eye me-1"></i>View Details
+                    </a>
+                    {% if movie.url %}
+                    <a href="{{ movie.url }}" class="btn btn-premium px-3" target="_blank" title="Official Webpage">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-search-heart text-muted mb-3" style="font-size: 4rem;"></i>
+        <h3 class="text-glow">No movies found</h3>
+        <p class="text-muted">Try using a different keywords search term.</p>
+        <a href="{% url 'home' %}" class="btn btn-premium">See All Movies</a>
+    </div>
+    {% endfor %}
+</div>
 
-    <button type="submit" class="btn btn-primary">Sign up</button>
-</form>
+<!-- Premium Mailing List Widget -->
+<div class="mail-list-box text-center shadow-lg">
+    <h3 class="fw-bold text-glow mb-2"><i class="bi bi-mailbox2 text-primary me-2"></i>Join CineWave Cinephiles</h3>
+    <p class="text-muted mb-4 max-width-md mx-auto">Get monthly recommendations, reviews highlights, and trending
+        cinematics feeds delivered straight to your mailbox.</p>
+    <form action="{% url 'signup' %}" class="row g-2 justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <input type="email" class="form-control form-input-dark text-center" name="email"
+                placeholder="Enter your email address" required>
+        </div>
+        <div class="col-md-3 col-lg-2 d-grid">
+            <button type="submit" class="btn btn-premium">Subscribe</button>
+        </div>
+    </form>
+</div>
 
+<!-- DOM Client-side Realtime Instant Filtering & Suggestions JS -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInputField');
+        const catalogCards = document.querySelectorAll('.movie-card-wrapper');
+        const suggestionsBox = document.getElementById('suggestionsContainer');
+
+        // Store all titles and links for local autocomplete list
+        const moviesData = [];
+        catalogCards.forEach(card => {
+            const title = card.querySelector('.card-title').innerText;
+            const link = card.querySelector('.movie-title-link').href;
+            moviesData.push({ title: title, link: link });
+        });
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+
+            // 1. Instant DOM filtering of cards list
+            catalogCards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                if (title.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // 2. Build live search dynamic suggestion box
+            if (query.length > 0) {
+                const matches = moviesData.filter(m => m.title.toLowerCase().includes(query)).slice(0, 5);
+                if (matches.length > 0) {
+                    suggestionsBox.innerHTML = '';
+                    matches.forEach(m => {
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        item.innerHTML = `<i class="bi bi-film me-2 text-primary"></i>${m.title}`;
+                        item.addEventListener('click', function () {
+                            window.location.href = m.link;
+                        });
+                        suggestionsBox.appendChild(item);
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+
+        // Close suggestions dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}

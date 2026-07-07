@@ -16,6 +16,18 @@ class Review(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie,on_delete=models.CASCADE)
+    rating = models.IntegerField(default=5)
 
     def __str__(self):
         return self.text
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'movie')
+
+    def __str__(self):
+        return f"{self.user.username}'s Watchlist: {self.movie.title}"

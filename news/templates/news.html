@@ -1,24 +1,33 @@
 {% extends 'base.html' %}
 
-{% block content %}      
-            
-    {% for news in newss %}
-         <div class="card mb-3">
-            <div class="row g-0">
-                <div>
-                  <div class="card-body">
-                      <h5 class="card-title">{{ news.headline}}</h5>
-                      <p class="card-text">{{ news.body }}</p>
-                      <p class="card-text">
-                           <small class="text-muted">
-                              {{ news.date }}
-                           </small>
-                       </p>
-                  </div>
-             </div>
-          </div>
-      </div>
-    {% endfor %}
+{% block content %}
+<div class="row mb-5">
+    <div class="col text-center">
+        <h1 class="fw-extrabold text-glow mb-2"><i class="bi bi-newspaper text-primary me-2"></i>CineWave News</h1>
+        <p class="text-muted">Stay up to date with the latest stories and reports in the film industry.</p>
+    </div>
+</div>
 
-{% endblock %}        
-        
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        {% for news in newss %}
+        <div class="glass-card mb-4 p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                <h4 class="fw-bold text-glow m-0">{{ news.headline }}</h4>
+                <span class="badge bg-secondary text-light px-2 py-1"><i class="bi bi-calendar2-event me-2"></i>{{
+                    news.date|date:"F d, Y" }}</span>
+            </div>
+            <p class="text-muted fs-6 lh-lg m-0 whitespace-pre-line">
+                {{ news.body }}
+            </p>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <i class="bi bi-clipboard-x text-muted" style="font-size: 4rem;"></i>
+            <h4 class="text-glow mt-3">No news articles found</h4>
+            <p class="text-muted">Check back later for updates.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

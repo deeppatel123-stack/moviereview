@@ -1,5 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1> Welcome to About Page</h1>
+<div class="row justify-content-center py-5">
+    <div class="col-md-10 col-lg-8">
+        <div class="glass-card p-4 p-sm-5 shadow-lg">
+            <div class="text-center mb-5">
+                <i class="bi bi-info-circle text-primary" style="font-size: 4rem;"></i>
+                <h1 class="fw-bold text-glow mt-3">About CineWave</h1>
+                <p class="text-muted fs-5">A premium community-driven cinematic review platform.</p>
+            </div>
+
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <h4 class="text-glow fw-bold"><i class="bi bi-chat-quote text-primary me-2"></i>Honest Reviews</h4>
+                    <p class="text-muted lh-base">Write, edit, and update movie reviews with user friendly 5-star
+                        ratings. Our community aggregates reviews transparently to help everyone share genuine cinephile
+                        opinions.</p>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="text-glow fw-bold"><i class="bi bi-bookmark-heart text-primary me-2"></i>Personal
+                        Watchlists</h4>
+                    <p class="text-muted lh-base">Bookmark custom movies to keep a persistent watchlist of releases you
+                        plan to watch. Access your selection at any time directly through your custom user profile
+                        navigation.</p>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-5">
+
+            <div class="text-center">
+                <h5 class="text-glow mb-3">Looking to add reviews?</h5>
+                <a href="{% url 'signupaccount' %}" class="btn btn-premium px-4 py-2">Create a Free Account Today</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
