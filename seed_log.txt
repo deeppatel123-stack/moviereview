@@ -1,0 +1,6 @@
+Pre-existing news count: 3
+Clearing out old mock news articles...
+Created: Dune: Part Two Dominates Global Box Office
+Created: Gladiator II Trailers Ignite High Antics for Ridley Scott's Return
+Created: Oscars 2026: Early Academy Awards Contenders Emerge
+Seeding completed successfully! News count: 3

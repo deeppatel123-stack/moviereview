@@ -15,9 +15,9 @@
             {% endif %}
             <select name="sort_by" class="form-select sort-select"
                 onchange="document.getElementById('sortForm').submit()">
-                <option value="title_asc" {% if sort_by == "title_asc" %}selected{% endif %}>Title (A - Z)</option>
-                <option value="title_desc" {% if sort_by == "title_desc" %}selected{% endif %}>Title (Z - A)</option>
-                <option value="rating_desc" {% if sort_by == "rating_desc" %}selected{% endif %}>Highest Rated</option>
+                <option value="title_asc" {% if is_title_asc %}selected{% endif %}>Title (A - Z)</option>
+                <option value="title_desc" {% if is_title_desc %}selected{% endif %}>Title (Z - A)</option>
+                <option value="rating_desc" {% if is_rating_desc %}selected{% endif %}>Highest Rated</option>
             </select>
         </form>
     </div>
@@ -60,6 +60,7 @@
         <div class="card h-100 glass-card">
             <div class="movie-img-container">
                 {% if movie.image %}
+                <img src="{{ movie.image.url }}" class="movie-img-blur-bg" alt="">
                 <img src="{{ movie.image.url }}" class="movie-img" alt="{{ movie.title }}">
                 {% else %}
                 <div class="d-flex align-items-center justify-content-center h-100 bg-secondary text-muted">
@@ -76,7 +77,7 @@
                 </div>
 
                 <!-- Ratings Summary -->
-                <div class="mb-3">
+                <div class="mb-3 card-ratings-row">
                     {% if movie.average_rating %}
                     <span class="average-stars" title="Average Rating">
                         <i class="bi bi-star-fill"></i> {{ movie.average_rating|floatformat:1 }} / 5.0
@@ -90,7 +91,7 @@
                     {{ movie.description|truncatechars:110 }}
                 </p>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 card-actions-row">
                     <a href="{% url 'detail' movie.id %}" class="btn btn-premium-outline flex-grow-1 text-center py-2">
                         <i class="bi bi-eye me-1"></i>View Details
                     </a>

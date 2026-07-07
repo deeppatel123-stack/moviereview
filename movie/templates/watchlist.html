@@ -14,6 +14,7 @@
         <div class="card h-100 glass-card">
             <div class="movie-img-container">
                 {% if movie.image %}
+                <img src="{{ movie.image.url }}" class="movie-img-blur-bg" alt="">
                 <img src="{{ movie.image.url }}" class="movie-img" alt="{{ movie.title }}">
                 {% else %}
                 <div class="d-flex align-items-center justify-content-center h-100 bg-secondary text-muted">
@@ -28,7 +29,7 @@
                 </a>
 
                 <!-- Ratings Summary -->
-                <div class="mb-3">
+                <div class="mb-3 card-ratings-row">
                     {% if movie.average_rating %}
                     <span class="average-stars" title="Average Rating">
                         <i class="bi bi-star-fill"></i> {{ movie.average_rating }} / 5.0
@@ -42,7 +43,7 @@
                     {{ movie.description|truncatechars:120 }}
                 </p>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 card-actions-row">
                     <a href="{% url 'detail' movie.id %}" class="btn btn-premium-outline flex-grow-1 text-center py-2">
                         <i class="bi bi-eye me-1"></i>View Details
                     </a>

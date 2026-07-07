@@ -27,6 +27,9 @@ def home(request):
         'searchTerm': searchTerm,
         'movies': movies,
         'sort_by': sort_by,
+        'is_title_asc': sort_by == 'title_asc',
+        'is_title_desc': sort_by == 'title_desc',
+        'is_rating_desc': sort_by == 'rating_desc',
     })
 
 def about(request):
