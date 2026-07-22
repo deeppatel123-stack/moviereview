@@ -1,53 +1,63 @@
-# 🎬 Movie Reviews
+# 🎬 Movie Review System
 
-A Django-based Movie Review web application where users can browse movies, search for movies, and read or submit reviews. The project provides a clean and responsive interface for managing movie reviews.
+A Movie Review System developed using Django that allows users to explore movies, read reviews, and share their opinions through ratings and comments. The platform provides authentication features and an easy-to-use interface for managing movie reviews.
 
 ## 🚀 Features
 
-- User Registration & Login
-- Movie Listing
-- Search Movies
-- Movie Details Page
-- Add Reviews
-- Responsive User Interface
-- Django Admin Panel
-- SQLite Database
+- User registration and login
+- Browse movie listings
+- View movie details
+- Add reviews and ratings
+- Edit and delete reviews
+- Responsive user interface
+- Secure authentication system
+- Admin panel for managing movies and reviews
 
 ## 🛠️ Tech Stack
 
 - Python
 - Django
-- HTML5
-- CSS3
-- Bootstrap 5
 - SQLite
+- HTML
+- CSS
+- Bootstrap
+- JavaScript
 
 ## 📂 Project Structure
 
-```
-moviereviews/
-│── movieapp/
-│── moviereviews/
-│── templates/
-│── static/
+```text
+moviereview/
+│── accounts/
+│   ├── templates/
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+│
+│── movie/
+│   ├── templates/
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+│
 │── media/
+│   └── movie/images/
+│
 │── db.sqlite3
 │── manage.py
-│── requirements.txt
 ```
 
-## ⚙️ Installation
+## ⚙️ Installation and Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/moviereviews.git
+git clone <repository-url>
 ```
 
-### 2. Navigate to the project
+### 2. Move to the project directory
 
 ```bash
-cd moviereviews
+cd moviereview
 ```
 
 ### 3. Create a virtual environment
@@ -64,13 +74,19 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
+**Linux / macOS**
+
+```bash
+source venv/bin/activate
+```
+
 ### 5. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install django
 ```
 
-### 6. Apply migrations
+### 6. Apply database migrations
 
 ```bash
 python manage.py migrate
@@ -82,29 +98,31 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-### 8. Open in browser
+### 8. Open the application
 
-```
+```text
 http://127.0.0.1:8000/
 ```
 
-## 📸 Screenshots
+## 📸 Screens Included
 
-Add screenshots of your application here.
+- Home page
+- Login page
+- Registration page
+- Movie details page
+- Add review page
+- Update review page
 
-## Future Enhancements
+## 🔮 Future Enhancements
 
-- Movie Categories
-- Ratings System
-- User Profiles
-- Favorites/Watchlist
-- Pagination
-- REST API Integration
+- Search movies
+- Filter movies by category
+- User profiles
+- Favorite movies feature
+- Review analytics and statistics
 
 ## 👨‍💻 Author
 
-**Deep Patel**
+Deep Patel
 
----
-
-⭐ If you like this project, consider giving it a star on GitHub!
+Developed as a Django-based Movie Review System project.
